@@ -1,0 +1,29 @@
+name: Generate SBOM
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Syft
+      uses: anchore/syft-action@v0.2.2
+
+    - name: Generate SBOM
+      run: syft . -o cyclonedx-json > sbom.json
+
+    - name: Upload SBOM
+      uses: actions/upload-artifact@v2
+      with:
+        name: sbom
+        path: sbom.json
